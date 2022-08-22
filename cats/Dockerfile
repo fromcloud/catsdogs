@@ -1,12 +1,22 @@
-FROM nginx
+FROM public.ecr.aws/amazonlinux/amazonlinux:2
+
+# Install dependencies
+RUN yum install -y \
+    curl \
+    httpd \
+    php \
+ && ln -s /usr/sbin/httpd /usr/sbin/apache2
+
+# Install app
+RUN rm -rf /var/www/html/* && mkdir -p /var/www/html
+ADD src /var/www/html
+
+# Configure apache
+RUN chown -R apache:apache /var/www
+ENV APACHE_RUN_USER apache
+ENV APACHE_RUN_GROUP apache
+ENV APACHE_LOG_DIR /var/log/apache2
+
 EXPOSE 80
-RUN apt-get update -y && \
-  apt-get upgrade -y && \
-  apt-get install -y curl && \
-  cd /tmp && \
-  apt-get install awscli -y && \
-  rm -rf /tmp/* && \
-  rm -rf /var/lib/apt/lists/*
-COPY ./default.conf /etc/nginx/conf.d/default.conf
-COPY ./index.html /usr/share/nginx/html/index.html
-CMD nginx -g "daemon off;"
+
+CMD ["/usr/sbin/apache2", "-D",  "FOREGROUND"]
