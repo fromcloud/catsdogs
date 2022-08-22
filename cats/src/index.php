@@ -26,7 +26,8 @@
         }
     </script>
 
-    <body>
+   <body onload = "showImage()">
+        <img id = "introImg" border="0">
         <div class="container">
             <div class="hero-unit">
                 <h1>Simple PHP App</h1>
